@@ -5,7 +5,8 @@ const root = path.resolve(__dirname, '..');
 fs.mkdirSync(path.join(root, 'test-results'), { recursive: true });
 const commands = [
   'scripts/check-site.cjs', 'tests/test.cjs', 'tests/audit.cjs',
-  'tests/formula-test.cjs', 'tests/learner-test.cjs', 'tests/accounting-test.cjs', 'tests/migration-test.cjs'
+  'tests/formula-test.cjs', 'tests/learner-test.cjs', 'tests/accounting-test.cjs', 'tests/migration-test.cjs',
+  'tests/keyboard-lock-test.cjs'
 ];
 for (const command of commands) {
   const result = spawnSync(process.execPath, [path.join(root, command)], { cwd: root, stdio: 'inherit' });

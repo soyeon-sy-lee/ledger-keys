@@ -17,6 +17,7 @@ JavaScript는 공유 전역 함수를 사용하므로 `index.html`의 스크립�
 | 셀 렌더링 | `docs/grid.js` |
 | 붙여넣기·행열·시트·기타 동작 | `docs/paste.js`, `dimensions.js`, `worksheets.js`, `actions.js`, `dialogs.js`, `exercises.js` |
 | 키보드 기종·Fn·Ctrl 보조 입력 | `docs/keyboard.js` |
+| 전체화면·Keyboard Lock 생명주기·전환 시 입력 초기화 | `docs/keyboard-lock.js` |
 | 학습자 프로필·EY 색상 조건·승진 팝업 | `docs/learner.js` |
 | 화면 스타일·EY 색상·색종이 효과 | `docs/style.css`, `accounting.css`, `formulas.css` |
 | 문의 연락처 | `docs/index.html`의 `.support-contact` |
@@ -46,3 +47,15 @@ JavaScript는 공유 전역 함수를 사용하므로 `index.html`의 스크립�
 수정 후 `npm test`를 실행합니다. 이 검사는 게임의 모델과 키 이벤트를 검증하며, 운영체제별 실제 키 가로채기나 시각적 배치를 모두 검증하는 것은 아닙니다. 기능 키·스크롤·팝업 등 UI 수정은 실제 브라우저에서도 확인하세요.
 
 기존 호환 학습 기록이 하나만 발견되면 새 저장 공간으로 복사합니다. 기존 데이터는 삭제하지 않습니다. 이미 새 기록이 있거나 후보가 여러 개면 자동 이전하지 않습니다.
+
+## 키보드 잠금
+
+`keyboard-lock.js`는 `keyboard.js` 이후, `app.js` 이전에 로드합니다. `installKeyboardLock()`은 한 번만 이벤트를 등록합니다. 클릭 → `requestFullscreen()` → `keyboard.lock(codes)` 순서로 진행하며, 마지막 Promise가 성공해야 활성 상태가 됩니다. `permissions.query({name:'keyboard-lock'})`를 필수 조건으로 사용하지 않습니다. 브라우저의 권한 실험·버전·관리 정책에 따른 차이는 실제 요청의 성공/거절로 처리합니다.
+
+물리 키 목록은 `D`에 등록된 기능 키와 브라우저 충돌 조합에서 추출합니다. F1·F2·F4·F5·F9·F11·F12, PageUp/Down, S/P/F/H/G/R/D/B/I/U/Y, 숫자 1/9/0, Minus/Equal을 검토하며, 현재 등록되지 않은 조합은 추가하지 않습니다. Esc·수식 입력 문자 전체·Ctrl/Alt/Meta 자체는 잠그지 않습니다. 물리 코드 잠금은 해당 키의 다른 조합에도 적용되므로 기존 입력 처리에서는 등록된 명령과 필요한 순차 입력에만 `preventDefault()`를 적용합니다. F3·F6·F10에 가짜 기능을 만들지 않습니다.
+
+잠금 관리자는 새 `keydown` 판정기를 만들지 않습니다. 기존 흐름은 기능 키/예약 키 기본 동작·반복 방지 → 수식 편집 → Ctrl 보조 → 미니 대화상자/선택 → 자유 실습 또는 세션 판정입니다. 키 조합 판정은 기존 `canonical()`을 사용하며 `code`는 물리 키, `key`는 기능·문자 의미로 구분합니다. 편집 중 저장·인쇄·도움말·이동·재계산·다른 이름 저장은 초안을 확정하고 같은 실행 경로를 사용합니다. 일반 입력창의 문자 입력과 편집 키는 그대로 둡니다.
+
+전체화면 종료·blur·페이지 숨김·pagehide·훈련 종료 시 unlock하고 Ctrl 대기·눌린 키·순차 입력을 초기화합니다. 요청 중 취소 후 늦게 완료되는 Promise도 정리하며, 완료 전 재시작을 막습니다. 잠금 상태는 저장하지 않으므로 다시 방문해도 클릭 없이 요청하지 않습니다. 미션·통합문서·XP·프로필 데이터는 잠금 전환으로 변경하지 않습니다.
+
+자동 모의 검사와 실제 브라우저 검사 범위는 [KEYBOARD-LOCK.md](KEYBOARD-LOCK.md)를 참고하세요.

@@ -2,7 +2,7 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
 const handlers={},elements={},storage={};let context;
 const document={activeElement:null,querySelectorAll:()=>[],getElementById(id){return elements[id]||={id,tagName:id==='formulaInput'?'TEXTAREA':'DIV',innerHTML:'',textContent:'',value:undefined,selectionStart:0,selectionEnd:0,setAttribute(){},focus(){document.activeElement=this},setSelectionRange(a,b){this.selectionStart=a;this.selectionEnd=b}}}};
 context={console,Date,Math,Set,Map,JSON,document,localStorage:{getItem:k=>storage[k],setItem:(k,v)=>storage[k]=v},window:{addEventListener:(k,f)=>handlers[k]=f},setInterval(){},alert(){},confirm:()=>true,prompt:()=>null};vm.createContext(context);
-for(const f of ['extra','sim','formulas','trace','paste','dimensions','worksheets','actions','dialogs','grid','exercises','keyboard','accounting','learner','app'])vm.runInContext(fs.readFileSync('docs/'+f+'.js','utf8'),context);
+for(const f of ['extra','sim','formulas','trace','paste','dimensions','worksheets','actions','dialogs','grid','exercises','keyboard','keyboard-lock','accounting','learner','app'])vm.runInContext(fs.readFileSync('docs/'+f+'.js','utf8'),context);
 const run=s=>vm.runInContext(s,context),key=(code,key,mods={},target={tagName:'BODY'})=>handlers.keydown({code,key,target,preventDefault(){},stopPropagation(){},...mods});
 function input(value,position=value.length){elements.formulaInput.value=value;elements.formulaInput.selectionStart=elements.formulaInput.selectionEnd=position;run('formulaInputChanged(document.getElementById("formulaInput"))')}
 function enter(){key('Enter','Enter',{},elements.formulaInput)}

@@ -4,7 +4,7 @@ function boot(){
  const elements={},handlers={},timers=[];let failStorage=false;
  const document={activeElement:null,querySelectorAll:()=>[],getElementById(id){return elements[id]||=( {id,tagName:'INPUT',innerHTML:'',textContent:'',value:'',attrs:{},setAttribute(k,v){this.attrs[k]=v},showModal(){this.open=true},close(){this.open=false},focus(){document.activeElement=this}})}};
  const context={console,Date,Math,Set,Map,JSON,document,localStorage:{getItem:k=>storage[k],setItem(k,v){if(failStorage)throw Error('Storage unavailable');storage[k]=v}},window:{addEventListener:(k,f)=>handlers[k]=f},setInterval:f=>timers.push(f),alert(){},confirm:()=>true,prompt:()=>null};
- vm.createContext(context);for(const file of ['extra','sim','formulas','trace','paste','dimensions','worksheets','actions','dialogs','grid','exercises','keyboard','accounting','learner','app'])vm.runInContext(fs.readFileSync(`docs/${file}.js`,'utf8'),context);
+ vm.createContext(context);for(const file of ['extra','sim','formulas','trace','paste','dimensions','worksheets','actions','dialogs','grid','exercises','keyboard','keyboard-lock','accounting','learner','app'])vm.runInContext(fs.readFileSync(`docs/${file}.js`,'utf8'),context);
  return {run:s=>vm.runInContext(s,context),elements,handlers,timers,fail:v=>failStorage=v};
 }
 let app=boot(),run=s=>app.run(s),form=(name,firm='')=>{app.elements.learnerName.value=name;app.elements.learnerFirm.value=firm},key=(code,key,mods={})=>app.handlers.keydown({code,key,target:{tagName:'BODY'},preventDefault(){throw Error('Profile typing must not be captured')},...mods});
