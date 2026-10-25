@@ -17,7 +17,7 @@ function boot(options={}){
  const context={console,Date,Math,Map,Set,JSON,Promise,isSecureContext:options.secure!==false,navigator:options.unsupported?{}:{keyboard},document,window:{addEventListener:on},localStorage:{getItem:k=>storage[k]??null,setItem:(k,v)=>storage[k]=v,key:i=>Object.keys(storage)[i],get length(){return Object.keys(storage).length}},setInterval(){},alert(){},prompt:()=>null,confirm:()=>true};
  vm.createContext(context);
  // Match production script order instead of maintaining another script list.
- for(const [,file] of fs.readFileSync('docs/index.html','utf8').matchAll(/<script src="([^"]+)"/g))vm.runInContext(fs.readFileSync('docs/'+file,'utf8'),context,{filename:file});
+ for(const [,file] of fs.readFileSync('docs/index.html','utf8').matchAll(/<script src="([^"]+)"/g))vm.runInContext(fs.readFileSync('docs/'+file.split('?')[0],'utf8'),context,{filename:file});
  const run=s=>vm.runInContext(s,context);
  function key(code,key,mods={}){let prevented=false;const e={code,key,target:{tagName:'BODY'},preventDefault(){prevented=true},stopPropagation(){},...mods};for(const f of handlers.keydown)f(e);return prevented}
  return {run,key,emit,calls,storage,document,classes,handlers,context};
