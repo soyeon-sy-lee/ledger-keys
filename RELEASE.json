@@ -5,7 +5,7 @@
   "homepage": "https://soyeon-sy-lee.github.io/shortcut-to-partner/",
   "publish_directory": "docs",
   "sha256": {
-    "docs/.nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/.nojekyll": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
     "docs/accounting.css": "f4429acb5312f66361374e76354e79d990c5245238f67a55254c7973e70b4f16",
     "docs/accounting.js": "364c3f5e524b11d012f104903916b524dd3413bccc0b230890054b9c77986d56",
     "docs/actions.js": "d61857fd180a7ff48554b9873bf0a8520fa65bc5d826a2b095b2a734bd69ae66",
