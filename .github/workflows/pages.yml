@@ -1,4 +1,4 @@
-name: Check and deploy Ledger Keys
+name: Check and deploy Shortcut to Partner
 
 on:
   push:
