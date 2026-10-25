@@ -17,4 +17,4 @@ http.createServer((request, response) => {
   } catch {
     response.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }).end('Not found');
   }
-}).listen(port, '127.0.0.1', () => console.log(`Ledger Keys: http://127.0.0.1:${port}/ (Ctrl+C to stop)`));
+}).listen(port, '127.0.0.1', () => console.log(`회계사 엑셀 훈련소: http://127.0.0.1:${port}/ (Ctrl+C to stop)`));

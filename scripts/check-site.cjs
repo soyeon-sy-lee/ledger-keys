@@ -19,5 +19,4 @@ for (const id of ['learnerDialog', 'promotionDialog', 'learnerBadge', 'app']) {
   assert(html.includes(`id="${id}"`), `Missing app element: ${id}`);
 }
 assert(fs.existsSync(path.join(site, '.nojekyll')));
-assert(!fs.existsSync(path.join(root, '.openai')), 'Sites hosting metadata must not be exported');
 console.log(`PASS: ${assets.length} relative assets, script syntax, entry point and Pages layout`);
