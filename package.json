@@ -1,0 +1,15 @@
+{
+  "name": "ledger-keys",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Windows Excel shortcut training for accountants — static GitHub Pages app",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "check": "node scripts/check-site.cjs",
+    "test": "node scripts/run-tests.cjs",
+    "dev": "node scripts/serve.cjs",
+    "start": "node scripts/serve.cjs"
+  }
+}
