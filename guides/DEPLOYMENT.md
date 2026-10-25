@@ -1,44 +1,38 @@
-# 배포 확인과 문제 해결
+# 배포 운영
 
-## 첫 배포
+- 저장소: https://github.com/soyeon-sy-lee/shortcut-to-partner
+- 서비스: https://soyeon-sy-lee.github.io/shortcut-to-partner/
+- 배포 브랜치: `main`
+- 배포 디렉터리: `docs/`
+- 워크플로: `.github/workflows/pages.yml`
 
-권장 방식은 README의 GitHub Actions 배포입니다. 필요한 Pages 설정은 저장소의 Settings에서 한 번 직접 수행합니다. `.github/workflows/pages.yml`이 검사와 배포를 함께 처리하며, 별도 토큰이나 ChatGPT 연동을 사용하지 않습니다.
+## 배포 흐름
 
-## 자주 발생하는 문제
+1. 변경 내용을 로컬에서 확인하고 `npm test`를 실행합니다.
+2. 커밋을 `main`에 푸시합니다.
+3. Actions의 **Check and deploy Shortcut to Partner**에서 `check`와 `deploy` 성공을 확인합니다.
+4. 서비스 주소에서 실제 화면과 수정한 동작을 확인합니다.
+
+PR에서는 검사만 실행하고, 기본 브랜치의 푸시 또는 수동 실행에서 배포합니다. 수동 실행은 Actions의 해당 워크플로에서 **Run workflow → main**을 선택합니다.
+
+저장소의 **Settings → Pages → Source**는 **GitHub Actions**를 사용합니다. 배포 토큰을 별도로 등록할 필요는 없습니다. GitHub Actions의 저장소 토큰과 Pages 권한으로 배포합니다.
+
+## 문제 해결
 
 | 증상 | 확인할 것 |
 | --- | --- |
-| Actions에 워크플로가 없음 | `.github/workflows/pages.yml`이 저장소 루트 기준 경로에 있는지 확인 |
-| Configure Pages에서 실패 | Settings → Pages → Source를 GitHub Actions로 선택 후 Actions에서 재실행 |
-| Pages 메뉴 또는 권한 오류 | 저장소 관리자 권한·요금제의 Pages 지원·조직의 Actions 정책 확인. 무료 개인 계정은 Public 저장소 사용 |
-| 사이트 404 | 배포 성공 여부, 저장소명, Visit site 링크 확인. URL을 수동 추측하지 않기 |
-| 파일 목록은 있는데 배포 실패 | ZIP 자체나 상위 폴더를 올리지 않았는지, 루트에 `docs/index.html`이 있는지 확인 |
-| CSS/JS를 못 읽음 | `docs/` 안 파일 누락 또는 절대 경로 변경 여부. `npm run check` 실행 |
-| 설정 전에 시작한 첫 배포 실패 | Pages를 켠 뒤 Actions → Check and deploy Ledger Keys → Run workflow 실행 |
-| 배포에 환경 승인 대기 | 조직/저장소의 `github-pages` 환경 배포 규칙 확인 |
-| 로컬 미리보기 포트 충돌 | 기존 서버를 종료하거나 `PORT`를 다른 값으로 지정 |
-| 소속·점수가 초기화된 것처럼 보임 | 호스트 주소가 바뀌면 localStorage가 분리됨. 브라우저 데이터 삭제 여부 확인 |
+| `check` 실패 | 해당 단계의 로그를 보고 `npm test`로 재현 |
+| Configure Pages 실패 | Settings → Pages의 Source가 GitHub Actions인지 확인 |
+| 환경 승인 대기 | `github-pages` 환경의 배포 규칙 확인 |
+| 사이트 404 | 최신 배포 성공 여부와 Pages가 표시하는 서비스 링크 확인 |
+| CSS·JavaScript 누락 | `docs/` 파일과 상대 경로 확인, `npm run check` 실행 |
+| 수정 전 화면 표시 | 최신 커밋의 배포 성공을 확인하고 새로고침 |
+| 사용자 기록이 보이지 않음 | 브라우저·호스트·사이트 데이터 삭제 여부 확인 |
 
-## 배포 주소와 도메인
+배포 결과를 확인하기 전에는 완료로 안내하지 않습니다. 실패했으면 마지막 정상 배포와 실패한 단계, 원인을 함께 확인합니다.
 
-프로젝트 저장소는 통상 `https://GITHUB_ID.github.io/REPOSITORY_NAME/`에 게시됩니다. 이 형식에는 기존 사이트의 `dongkwan-kim.chatgpt.site`가 들어가지 않습니다. 대신 본인의 GitHub ID가 주소에 포함됩니다.
+## 주소 관리
 
-본인 도메인이 있다면 GitHub Pages의 Custom domain 설정과 도메인 DNS를 연결할 수 있습니다. 이 패키지는 도메인을 가정하지 않아 `CNAME`을 미리 넣지 않았습니다. 실제로 소유한 도메인만 설정하세요.
+서비스는 GitHub Pages 프로젝트 경로인 `/shortcut-to-partner/`에서 동작합니다. HTML의 자산 경로는 상대 경로를 사용합니다. 링크·문서·워크플로를 수정할 때 저장소명과 서비스 주소를 함께 확인하세요.
 
-## Git으로 최초 업로드하는 경우
-
-GitHub에서 빈 저장소를 먼저 만든 다음 압축 해제 폴더에서 아래를 실행합니다. `<OWNER>`와 `<REPOSITORY>`는 본인 값으로 바꿉니다.
-
-```sh
-git init -b main
-git add .
-git commit -m "Initial Ledger Keys GitHub Pages release"
-git remote add origin https://github.com/<OWNER>/<REPOSITORY>.git
-git push -u origin main
-```
-
-이 과정의 GitHub 인증은 본인의 Git 클라이언트에서 처리합니다. ChatGPT 계정 연결이나 채팅에 토큰 전달은 필요하지 않습니다. 이후 Settings → Pages → Source → GitHub Actions를 켜고 워크플로를 실행합니다.
-
-## 연동을 끝낸 뒤
-
-GitHub Actions는 GitHub 저장소 안에서 동작합니다. ChatGPT가 계속 켜져 있거나 연결되어 있을 필요가 없습니다. 이 패키지를 만든 대화와 저장소 사이에도 자동 동기화가 설정되지 않습니다.
+사용자 지정 도메인이 필요한 경우 실제 소유한 도메인을 Pages의 Custom domain과 DNS에 연결합니다. 저장소에는 기본 도메인을 가정한 `CNAME` 파일을 두지 않습니다.
