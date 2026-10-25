@@ -6,7 +6,7 @@ const root = path.resolve(__dirname, '..');
 const site = path.join(root, 'docs');
 const html = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
 const assets = [...html.matchAll(/(?:src|href)="([^"]+)"/g)]
-  .map(match => match[1]).filter(value => !/^(?:[a-z]+:|#)/i.test(value));
+  .map(match => match[1].split('?')[0]).filter(value => !/^(?:[a-z]+:|#)/i.test(value));
 for (const asset of assets) {
   assert(!asset.startsWith('/'), `Use relative asset paths for project Pages: ${asset}`);
   assert(fs.statSync(path.resolve(site, asset)).isFile(), `Missing asset: ${asset}`);
