@@ -34,7 +34,7 @@ function saveLearner(event){
  if(!name){error.textContent='이름 또는 닉네임을 입력해주세요.';document.getElementById('learnerName').focus();return false}
  if(name.length>24||firm.length>40){error.textContent='이름은 24자, 소속 법인은 40자 이내로 입력해주세요.';return false}
  const nextState={...state,learner:{name,firm}};
- try{localStorage.setItem('ledgerkeys-v1',JSON.stringify(nextState))}catch{error.textContent='정보를 저장하지 못했어요. 브라우저의 저장 공간 설정을 확인해주세요.';return false}
+ try{localStorage.setItem('shortcut-to-partner-v1',JSON.stringify(nextState))}catch{error.textContent='정보를 저장하지 못했어요. 브라우저의 저장 공간 설정을 확인해주세요.';return false}
  state=nextState;closeLearner(true);return true;
 }
 
