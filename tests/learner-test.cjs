@@ -1,5 +1,5 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
-const storage={'ledgerkeys-v1':JSON.stringify({profiles:[{name:'기존 업무용',tools:['values','number','filter']}],profile:0,stats:{'number|basic':{n:2,ok:1,time:3,hints:0}},xp:195})};
+const storage={'shortcut-to-partner-v1':JSON.stringify({profiles:[{name:'기존 업무용',tools:['values','number','filter']}],profile:0,stats:{'number|basic':{n:2,ok:1,time:3,hints:0}},xp:195})};
 function boot(){
  const elements={},handlers={},timers=[];let failStorage=false;
  const document={activeElement:null,querySelectorAll:()=>[],getElementById(id){return elements[id]||=( {id,tagName:'INPUT',innerHTML:'',textContent:'',value:'',attrs:{},setAttribute(k,v){this.attrs[k]=v},showModal(){this.open=true},close(){this.open=false},focus(){document.activeElement=this}})}};

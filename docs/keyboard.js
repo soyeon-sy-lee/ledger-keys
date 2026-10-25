@@ -1,9 +1,33 @@
+// Import an existing compatible training record once; never delete the original.
+function migrateTrainingStorage(){
+ try{
+  const target='shortcut-to-partner-v1';if(localStorage.getItem(target)!==null)return;
+  const matches=[];
+  for(let i=0;i<localStorage.length;i++){
+   const key=localStorage.key(i);if(!key||key===target||!key.endsWith('-v1'))continue;
+   let value;try{value=JSON.parse(localStorage.getItem(key))}catch{continue}
+   if(!value||!Array.isArray(value.profiles)||!value.profiles.length||!Number.isInteger(value.profile)||value.profile<0||value.profile>=value.profiles.length||!value.stats||typeof value.stats!=='object'||Array.isArray(value.stats))continue;
+   if(!value.profiles.every(p=>p&&typeof p.name==='string'&&Array.isArray(p.tools)&&p.tools.every(t=>typeof t==='string')))continue;
+   if(!Object.entries(value.stats).every(([k,v])=>k.includes('|')&&v&&typeof v.n==='number'&&typeof v.ok==='number'))continue;
+   if(value.xp!==undefined&&(!Number.isFinite(value.xp)||value.xp<0))continue;
+   matches.push({key,value});
+  }
+  if(matches.length!==1)return;
+  const {key,value}=matches[0],prefix=key.slice(0,-3),next='shortcut-to-partner';
+  for(const suffix of ['-keyboard','-ctrl-assist','-workbook']){
+   const data=localStorage.getItem(prefix+suffix);if(data!==null&&localStorage.getItem(next+suffix)===null)localStorage.setItem(next+suffix,data);
+  }
+  localStorage.setItem(target,JSON.stringify(value));
+ }catch{}
+}
+migrateTrainingStorage();
+
 // Optional Ctrl assistance avoids sending simultaneous Ctrl chords to the host OS.
 let ctrlAssist=false,ctrlQueued=false,ctrlPressed=false,ctrlUsed=false;
-try{ctrlAssist=localStorage.getItem('ledgerkeys-ctrl-assist')==='true'}catch{}
+try{ctrlAssist=localStorage.getItem('shortcut-to-partner-ctrl-assist')==='true'}catch{}
 function isMacKeyboard(){return typeof navigator!=='undefined'&&/Mac/i.test(navigator.userAgentData?.platform||navigator.platform||navigator.userAgent||'')}
 function clearCtrlAssist(){ctrlQueued=false;ctrlPressed=false;ctrlUsed=false;held.delete('Ctrl');updateCtrlAssistStatus()}
-function toggleCtrlAssist(){ctrlAssist=!ctrlAssist;clearCtrlAssist();seq=[];held.clear();try{localStorage.setItem('ledgerkeys-ctrl-assist',String(ctrlAssist))}catch{}render();activateSheet()}
+function toggleCtrlAssist(){ctrlAssist=!ctrlAssist;clearCtrlAssist();seq=[];held.clear();try{localStorage.setItem('shortcut-to-partner-ctrl-assist',String(ctrlAssist))}catch{}render();activateSheet()}
 function queueCtrl(){if(!ctrlAssist||paused||book?.dialog)return;ctrlQueued=!ctrlQueued;ctrlPressed=false;ctrlUsed=false;if(ctrlQueued)held.add('Ctrl');else held.delete('Ctrl');activateSheet();refreshKeys()}
 function updateCtrlAssistStatus(){let status=document.getElementById('ctrlAssistStatus'),button=document.getElementById('queueCtrl');if(status)status.textContent=ctrlQueued?'Ctrl 대기 중 · 손을 뗀 상태로 나머지 키를 누르세요.':ctrlPressed?'Ctrl을 떼면 다음 키에 한 번 적용됩니다.':'Ctrl을 눌렀다 떼기 → 나머지 키 입력';if(button){button.textContent=ctrlQueued?'Ctrl 대기 취소':'Ctrl 먼저 선택';button.setAttribute?.('aria-pressed',String(ctrlQueued))}}
 function ctrlAssistAllowed(e){return ['train','practice'].includes(currentPage)&&!paused&&!session?.done&&!book?.dialog&&!textEntry(e.target)&&!e.metaKey&&!e.isComposing}
@@ -29,9 +53,9 @@ function keyboardHelp(){return `${keyboardProfile()}<details class="keyboard-hel
 
 const keyboardModels={generic:'일반 키보드',thinkpad:'Lenovo ThinkPad X1',k580:'Logitech K580',mxmini:'Logitech MX Keys Mini',apple:'MacBook / Apple 키보드'};
 let keyboardPrefs={model:'generic',os:'auto',fn:'unknown'};
-try{const p=JSON.parse(localStorage.getItem('ledgerkeys-keyboard')||'null');if(p){if(keyboardModels[p.model])keyboardPrefs.model=p.model;if(['auto','windows','mac'].includes(p.os))keyboardPrefs.os=p.os;if(['unknown','direct','fn'].includes(p.fn))keyboardPrefs.fn=p.fn}}catch{}
+try{const p=JSON.parse(localStorage.getItem('shortcut-to-partner-keyboard')||'null');if(p){if(keyboardModels[p.model])keyboardPrefs.model=p.model;if(['auto','windows','mac'].includes(p.os))keyboardPrefs.os=p.os;if(['unknown','direct','fn'].includes(p.fn))keyboardPrefs.fn=p.fn}}catch{}
 function keyboardMac(){return keyboardPrefs.os==='mac'||keyboardPrefs.os==='auto'&&isMacKeyboard()}
-function setKeyboardPref(key,value){const valid={model:Object.keys(keyboardModels),os:['auto','windows','mac'],fn:['unknown','direct','fn']};if(!valid[key]?.includes(value))return;keyboardPrefs[key]=value;try{localStorage.setItem('ledgerkeys-keyboard',JSON.stringify(keyboardPrefs))}catch{}clearCtrlAssist();seq=[];held.clear();render()}
+function setKeyboardPref(key,value){const valid={model:Object.keys(keyboardModels),os:['auto','windows','mac'],fn:['unknown','direct','fn']};if(!valid[key]?.includes(value))return;keyboardPrefs[key]=value;try{localStorage.setItem('shortcut-to-partner-keyboard',JSON.stringify(keyboardPrefs))}catch{}clearCtrlAssist();seq=[];held.clear();render()}
 function keyboardSelect(key,label,options){return `<label>${label}<select aria-label="${label}" onchange="setKeyboardPref('${key}',this.value)">${Object.entries(options).map(([v,n])=>`<option value="${v}" ${keyboardPrefs[key]===v?'selected':''}>${n}</option>`).join('')}</select></label>`}
 function keyboardProfile(){return `<div class="keyboard-profile">${keyboardSelect('model','내 키보드',keyboardModels)}${keyboardSelect('os','사용 OS',{auto:'자동 감지',windows:'Windows',mac:'macOS'})}${keyboardSelect('fn','F1~F12 입력 방식',{unknown:'아직 모름',direct:'F1~F12만 누르기',fn:'Fn + F1~F12 누르기'})}</div>`}
 function keyboardModelHelp(){const model=keyboardPrefs.model;const info={generic:['음량·밝기가 바뀌면 Fn과 함께 눌러보세요. Fn Lock 방식은 키보드 설명서를 확인하세요.','https://www.logitech.com/en-us/discover/a/fn-key-shortcuts'],thinkpad:['Fn + Esc로 Fn Lock을 전환할 수 있습니다. X1 세대와 BIOS 설정에 따라 다르므로 F2를 눌러 확인한 뒤 입력 방식을 선택하세요. Fn과 Ctrl 위치가 바뀌어 설정된 경우 실제 Ctrl로 인식되는 키를 사용하세요.','https://support.lenovo.com/us/en/solutions/ht103044-how-to-use-the-function-keys-without-pressing-fn-in-windows-8110'],k580:['K580은 일반판과 Chrome OS판의 배열이 다를 수 있습니다. 키캡의 F2와 Fn 조합을 확인하고, 기능 키 설정은 Logi Options+와 해당 제품 설명서를 확인하세요. 이 선택은 일반판 기준 안내입니다.','https://support.logi.com/hc/en-in/articles/360037457173-Getting-Started-K580-Slim-Multi-Device-Wireless-Keyboard'],mxmini:['기본은 미디어 키 우선입니다. Fn + Esc로 미디어 키와 F1~F12 우선을 전환할 수 있습니다. 일반판과 Mac 전용판의 키 표기가 다를 수 있습니다.','https://support.logi.com/hc/en-us/articles/4409084730775-Getting-Started-MX-Keys-Mini'],apple:['기능 키가 밝기·음량으로 동작하면 Fn(🌐)과 함께 누르세요. macOS 키보드 설정에서 표준 기능 키 사용을 켜면 F2만으로 입력할 수 있습니다.','https://support.apple.com/guide/mac-help/keyboard-shortcuts-mchlp2262/mac']}[model];return `<div class="keyboard-model-help"><b>${keyboardModels[model]}</b><p>${info[0]}</p><p>${keyboardMac()?'Windows Excel 훈련이므로 Ctrl은 Control(⌃), Alt는 Option(⌥)입니다. Command(⌘)로 바꾸지 마세요.':'Windows Excel의 Ctrl·Alt 키를 사용하세요.'} Fn 잠금과 키 재배치는 웹사이트가 변경하지 않습니다.</p><a href="${info[1]}" target="_blank" rel="noopener noreferrer">제조사 안내 ↗</a><p>입력이 맞는지 확인: 아래 칸을 클릭하고 F2 또는 Fn + F2를 눌러보세요. 음량만 바뀌면 웹사이트에 키가 전달되지 않은 상태입니다.</p><input readonly aria-label="기능 키 입력 확인" placeholder="여기를 클릭하고 F2를 누르세요" onkeydown="event.stopPropagation();event.preventDefault();this.value=event.key==='F2'?'✓ F2 입력 확인됨':'감지된 키: '+event.key"></div>`}

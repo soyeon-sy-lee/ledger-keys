@@ -34,10 +34,10 @@ JavaScript는 공유 전역 함수를 사용하므로 `index.html`의 스크립�
 
 | localStorage 키 | 저장하는 것 |
 | --- | --- |
-| `ledgerkeys-v1` | 학습자·QAT 구성·XP·기록·학습 범위 |
-| `ledgerkeys-keyboard` | 선택한 키보드·OS·기능 키 입력 방식 |
-| `ledgerkeys-ctrl-assist` | Ctrl 나눠 누르기 설정 |
-| `ledgerkeys-workbook` | 사용자가 저장한 미니 엑셀 통합문서 |
+| `shortcut-to-partner-v1` | 학습자·QAT 구성·XP·기록·학습 범위 |
+| `shortcut-to-partner-keyboard` | 선택한 키보드·OS·기능 키 입력 방식 |
+| `shortcut-to-partner-ctrl-assist` | Ctrl 나눠 누르기 설정 |
+| `shortcut-to-partner-workbook` | 사용자가 저장한 미니 엑셀 통합문서 |
 
 서버 업로드나 사용자 간 공유는 없습니다. 문의 주소는 `mailto:` 링크이며 사이트가 메일을 직접 보내지는 않습니다.
 
@@ -45,4 +45,4 @@ JavaScript는 공유 전역 함수를 사용하므로 `index.html`의 스크립�
 
 수정 후 `npm test`를 실행합니다. 이 검사는 게임의 모델과 키 이벤트를 검증하며, 운영체제별 실제 키 가로채기나 시각적 배치를 모두 검증하는 것은 아닙니다. 기능 키·스크롤·팝업 등 UI 수정은 실제 브라우저에서도 확인하세요.
 
-새 `docs` 파일을 추가하거나 기존 파일을 수정하면 `RELEASE.json`은 최초 패키지 스냅샷 기록으로 남습니다. 배포 시 이 해시를 강제하지 않으므로 유지보수를 막지 않습니다.
+기존 호환 학습 기록이 하나만 발견되면 새 저장 공간으로 복사합니다. 기존 데이터는 삭제하지 않습니다. 이미 새 기록이 있거나 후보가 여러 개면 자동 이전하지 않습니다.

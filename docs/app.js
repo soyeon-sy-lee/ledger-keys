@@ -32,10 +32,10 @@ const D=[
 ].map(([id,name,prompt,shortcut,result,effect])=>({id,name,prompt,shortcut,result,effect}));
 D.push(...EXTRA.map(([id,name,prompt,shortcut,result,effect])=>({id,name,prompt,shortcut,result,effect})));
 const by=id=>D.find(x=>x.id===id),defaults=['values','paint','filter','clear','precedent','dependent','arrows'];
-let saved;try{saved=JSON.parse(localStorage.getItem('ledgerkeys-v1'))}catch{}let state=saved||{profiles:[{name:'나의 업무용',tools:defaults}],profile:0,stats:{}};if(!Number.isFinite(state.xp)){state.xp=Object.values(state.stats||{}).reduce((n,s)=>n+s.ok*10,0);state.xpMigrated=true;}
+let saved;try{saved=JSON.parse(localStorage.getItem('shortcut-to-partner-v1'))}catch{}let state=saved||{profiles:[{name:'나의 업무용',tools:defaults}],profile:0,stats:{}};if(!Number.isFinite(state.xp)){state.xp=Object.values(state.stats||{}).reduce((n,s)=>n+s.ok*10,0);state.xpMigrated=true;}
 state.profiles.forEach(p=>p.tools=p.tools.filter(id=>by(id)));let currentPage='train',mode='learn',route='basic',category='all',session=null,seq=[],lastInput='',paused=false,feedback='',effect=false,showHint=false,drag=null,promotion='',lastReward=0,held=new Set();
 const app=document.getElementById('app'),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function save(){try{localStorage.setItem('ledgerkeys-v1',JSON.stringify(state))}catch{feedback='브라우저 저장 공간이 부족해 기록을 저장하지 못했어요.'}}
+function save(){try{localStorage.setItem('shortcut-to-partner-v1',JSON.stringify(state))}catch{feedback='브라우저 저장 공간이 부족해 기록을 저장하지 못했어요.'}}
 const profile=()=>state.profiles[state.profile],qat=id=>{let i=profile().tools.indexOf(id)+1;return i?String(i<10?i:'0'+(i===10?'9':i===11?'8':i===12?'7':i===13?'6':i===14?'5':i===15?'4':i===16?'3':i===17?'2':i===18?'1':'0')):null};
 function qpath(id){return 'Alt,'+qat(id).split('').join(',')}
 function keyLabel(s){return s.replaceAll('ArrowDown','↓').replaceAll('ArrowUp','↑').replaceAll('ArrowLeft','←').replaceAll('ArrowRight','→').replaceAll('BracketLeft','[').replaceAll('Backquote','`').replaceAll('Equal','=')}
