@@ -95,6 +95,7 @@ function commitCellEdit(value){
 function formulaEditorKey(e){
  if(book?.dialog||learnerDialogOpen||paused||e.isComposing)return false;
  if(e.target?.id==='formulaInput'){
+  if(workbookEditorShortcut(e)&&book.editor){e.preventDefault();commitCellEdit(e.target.value);return false}
   if(e.ctrlKey&&['PageUp','PageDown'].includes(e.key)&&book.editor){e.preventDefault();chooseWorksheet(book.sheet+(e.key==='PageUp'?-1:1));return true}
   if(e.key==='Enter'&&!e.altKey){e.preventDefault();commitCellEdit(e.target.value);return true}
   if(e.key==='Escape'){e.preventDefault();cancelCellEdit();return true}
